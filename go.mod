@@ -1,4 +1,4 @@
-module github.com/wakatara/proglog
+module github.com/wakatara/distributed-logger
 
 go 1.17
 
