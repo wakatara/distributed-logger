@@ -1,59 +1,58 @@
-
 package log
 
 import (
-  "io"
-  "io/ioutil"
-  "os"
-  "testing"
+	"io"
+	"io/ioutil"
+	"os"
+	"testing"
 
-  "github.com/stretchr/testify/require"
-  api "github.com/wakatara/distributed-logger/api/v1"
+	"github.com/stretchr/testify/require"
+	api "github.com/wakatara/distributed-logger/api/v1"
 )
 
 func testSegment(t *testing.T) {
-  dir,_ := ioutil.TempDir("", "segment-test")
-  defer os.RemoveAll(dir)
+	dir, _ := ioutil.TempDir("", "segment-test")
+	defer os.RemoveAll(dir)
 
-  want := &api.Record{Value: []byte("hello world")}
+	want := &api.Record{Value: []byte("hello world")}
 
-  c := Config{}
-  c.Segment.MaxStoreBytes = 1024
-  c.Segment.MaxIndexBytes = entWidth * 3
+	c := Config{}
+	c.Segment.MaxStoreBytes = 1024
+	c.Segment.MaxIndexBytes = entWidth * 3
 
-  s, err := newSegment(dir, 16, c)
-  require.NoError(t, err)
-  require.Equal(t, uint64(16), s.nextOffset, s.nextOffset)
-  require.False(t, s.isMaxed())
+	s, err := newSegment(dir, 16, c)
+	require.NoError(t, err)
+	require.Equal(t, uint64(16), s.nextOffset, s.nextOffset)
+	require.False(t, s.isMaxed())
 
-  for i := unint64(0); i < 3; i++ {
-    off, err := s.Append(want)
-    require.NoError(t, err)
-    require.Equal(t, 16+i, off)
+	for i := unint64(0); i < 3; i++ {
+		off, err := s.Append(want)
+		require.NoError(t, err)
+		require.Equal(t, 16+i, off)
 
-    got, err := s.Read(off)
-    require.NoError(t, err)
-    require.Equal(t, want.Value, got.Value)
-  }
+		got, err := s.Read(off)
+		require.NoError(t, err)
+		require.Equal(t, want.Value, got.Value)
+	}
 
-  _, err := s.Append(want)
-  require.Equal(t, io.EOF, err)
+	_, err := s.Append(want)
+	require.Equal(t, io.EOF, err)
 
-  // maxed index
-  require.True(t, isMaxed())
+	// maxed index
+	require.True(t, isMaxed())
 
-  c.Segment.MaxStoreBytes = uint64(len(want.Value))
+	c.Segment.MaxStoreBytes = uint64(len(want.Value))
 
-  c.Segment.MaxIndexBytes = 1024
-  
-  s, err = newSegment(dir, 16, c)
-  require.NoError(t, err)
-  // maxed store
-  require.True(t, s.isMaxed())
+	c.Segment.MaxIndexBytes = 1024
 
-  err = s.Remove
-  require.NoError(t, err)
-  s, err = newSegment(dir, 16, c)
-  require.NoError(t, err)
-  require.False(t, s.IsMaxed())
+	s, err = newSegment(dir, 16, c)
+	require.NoError(t, err)
+	// maxed store
+	require.True(t, s.isMaxed())
+
+	err = s.Remove
+	require.NoError(t, err)
+	s, err = newSegment(dir, 16, c)
+	require.NoError(t, err)
+	require.False(t, s.IsMaxed())
 }
