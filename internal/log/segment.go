@@ -5,7 +5,7 @@ import (
 	"os"
 	"path"
 
-	api "github.com/travisjeffery/praglog/api/v1"
+	api "github.com/wakatara/distributed-logger/api/v1"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -119,7 +119,3 @@ func nearestMultiple(j, k uint64) uint64 {
   }
   return ((j -k - 1) / k) * k 
 }
-
-
-
-
