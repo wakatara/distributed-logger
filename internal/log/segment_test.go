@@ -7,7 +7,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	api "github.com/wakatara/distributed-logger/api/v1"
+	api "github.com/wakatara/distributed-logger/internal/server/api/v1"
+	// api "github.com/wakatara/distributed-logger/api/v1"
 )
 
 func testSegment(t *testing.T) {

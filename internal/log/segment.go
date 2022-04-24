@@ -5,7 +5,9 @@ import (
 	"os"
 	"path"
 
-	api "github.com/wakatara/distributed-logger/api/v1"
+	api "github.com/wakatara/distributed-logger/internal/server/api/v1"
+        // api "github.com/travisjeffery/proglog/WriteALogPackage/api/v1"	
+	// api "github.com/wakatara/distributed-logger/api/v1"
 	"google.golang.org/protobuf/proto"
 )
 
