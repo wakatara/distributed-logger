@@ -6,10 +6,10 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	// api "github.com/wakatara/distributed-logger/server/api/v1"
-	api "github.com/wakatara/distributed-logger/internal/server/api/v1"
-        // api "github.com/travisjeffery/proglog/WriteALogPackage/api/v1"	
 	"google.golang.org/protobuf/proto"
+	// api "github.com/wakatara/distributed-logger/server/api/v1"
+	// api "github.com/wakatara/distributed-logger/internal/server/api/v1"
+        api "github.com/travisjeffery/proglog/WriteALogPackage/api/v1"	
 )
 
 func TestLog(t *testing.T) {
@@ -23,10 +23,10 @@ func TestLog(t *testing.T) {
 		"truncate": testTruncate,
 	} {
 		t.Run(scenario, func(t *testing.T) {
-			dir, err := ioutil.TempDir("", store-test)
+			dir, err := ioutil.TempDir("", "store-test")
 			require.NoError(t, err)
 			defer os.RemoveAll(dir)
-			c := Config
+			c := Config{}
 			c.Segment.MaxStoreBytes = 32
 			log, err := NewLog(dir, c)
 			require.NoError(t, err)
@@ -63,7 +63,7 @@ func testInitExisting(t *testing.T, o *Log) {
 		_, err := o.Append(append)
 		require.NoError(t, err)
 	}
-	require.NoError(t, o,Close())
+	require.NoError(t, o.Close())
 
 	off, err := o.LowestOffset()
 	require.NoError(t, err)
