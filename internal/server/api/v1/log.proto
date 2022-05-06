@@ -5,13 +5,34 @@ package log.v1;
 option go_package = "github.com/wakatara/distributed-logger/api/log_v1";
 
 service Log {
-    rpc Produce(ProductRequest) returns (ProductResponse) {}
-	rpc Consume(ConsumeRequest) returns (ConsumeRequest) {}
-	rpc ConsumeStream(ConsumeRequest) returns (stream ConsumeResponse) {}
-	rpc ProduceStream(stream ProduceRequest) returns (stream ProduceResponse) {}
+    rpc Produce(ProduceRequest) returns (ProduceResponse) {}
+    rpc Consume(ConsumeRequest) returns (ConsumeRequest) {}
+    rpc ConsumeStream(ConsumeRequest) returns (stream ConsumeResponse) {}
+    rpc ProduceStream(stream ProduceRequest) returns (stream ProduceResponse) {}
 }
 
 message Record {
     bytes value = 1;
     uint64 offset = 2;
 }
+
+message ProduceRequest {
+    Record record = 1;
+}
+
+message ProduceResponse {
+    uint64 offset = 1;
+}
+
+message ConsumeRequest {
+    uint64 offset = 1;
+}
+
+message ConsumeResponse {
+    Record record = 2;
+}
+
+
+
+
+
