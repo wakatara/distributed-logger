@@ -1,4 +1,4 @@
-package log 
+package log
 
 import (
 	"io/ioutil"
@@ -6,10 +6,11 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	api "github.com/wakatara/distributed-logger/internal/server/api/v1"
 	"google.golang.org/protobuf/proto"
 	// api "github.com/wakatara/distributed-logger/server/api/v1"
 	// api "github.com/wakatara/distributed-logger/internal/server/api/v1"
-        api "github.com/travisjeffery/proglog/WriteALogPackage/api/v1"	
+	// api "github.com/travisjeffery/proglog/WriteALogPackage/api/v1"
 )
 
 func TestLog(t *testing.T) {
@@ -17,10 +18,10 @@ func TestLog(t *testing.T) {
 		t *testing.T, log *Log,
 	){
 		"append and read a record succeeds": testAppendRead,
-		"offset ouf of range error": testOutOfRangeErr,
-		"init with existing segments": testInitExisting,
-		"reader": testReader,
-		"truncate": testTruncate,
+		"offset ouf of range error":         testOutOfRangeErr,
+		"init with existing segments":       testInitExisting,
+		"reader":                            testReader,
+		"truncate":                          testTruncate,
 	} {
 		t.Run(scenario, func(t *testing.T) {
 			dir, err := ioutil.TempDir("", "store-test")
@@ -30,29 +31,29 @@ func TestLog(t *testing.T) {
 			c.Segment.MaxStoreBytes = 32
 			log, err := NewLog(dir, c)
 			require.NoError(t, err)
-			
+
 			fn(t, log)
 		})
 	}
 }
 
-func testAppendRead (t *testing.T, log *Log) {
+func testAppendRead(t *testing.T, log *Log) {
 	append := &api.Record{
-			Value: []byte("hello world"),
-		}
-		off, err := log.Append(append)
-		require.NoError(t, err)
-		require.Equal(t, uint64(0), off)
+		Value: []byte("hello world"),
+	}
+	off, err := log.Append(append)
+	require.NoError(t, err)
+	require.Equal(t, uint64(0), off)
 
-		read, err := log.Read(off)
-		require.NoError(t, err)
-		require.Equal(t, append.Value, read.Value)
+	read, err := log.Read(off)
+	require.NoError(t, err)
+	require.Equal(t, append.Value, read.Value)
 }
 
 func testOutOfRangeErr(t *testing.T, log *Log) {
 	read, err := log.Read(1)
 	require.Nil(t, read)
-	require.Error(t,err)
+	require.Error(t, err)
 }
 
 func testInitExisting(t *testing.T, o *Log) {
@@ -105,7 +106,7 @@ func testTruncate(t *testing.T, log *Log) {
 	append := &api.Record{
 		Value: []byte("hello world"),
 	}
-	for i :=0; i<3; i++ {
+	for i := 0; i < 3; i++ {
 		_, err := log.Append(append)
 		require.NoError(t, err)
 	}
@@ -116,10 +117,3 @@ func testTruncate(t *testing.T, log *Log) {
 	_, err = log.Read(0)
 	require.Error(t, err)
 }
-
-
-
-
-
-
-
